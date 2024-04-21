@@ -12,7 +12,7 @@ exports.createTodo = async (req, res) => {
     try {
         const newTodo = new Todo(todo);
         await newTodo.save();
-        res.status(201).json(newTodo);
+        res.status(201).json({ message: 'Todo created successfully' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -41,7 +41,7 @@ exports.updateTodo = async (req, res) => {
     try {
         const todo = await Todo.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!todo) return res.status(404).send('Todo not found');
-        res.send(todo);
+        res.status(200).send({ message: 'Todo updated successfully'});
     } catch (err) {
         res.status(400).send(err);
     }
@@ -51,7 +51,7 @@ exports.deleteTodo = async (req, res) => {
     try {
         const todo = await Todo.findByIdAndDelete(req.params.id);
         if (!todo) return res.status(404).send('Todo not found');
-        res.send(todo);
+        res.status(200).json({ message: 'Todo deleted successfully' });
     } catch (err) {
         res.status(500).send(err);
     }
