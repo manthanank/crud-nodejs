@@ -1,9 +1,103 @@
-# CRUD nodejs
+# CRUD Nodejs
 
-## Using MongoDB
+## Table of Contents
+
+1. CRUD Application with Node.js, Express, and MongoDB.
+2. CRUD Application with Node.js, Express, and MySQL.
+
+# CRUD Application with Node.js, Express, and MongoDB
+
+## Project Setup
+
+### Step 1: Setting Up the Project
+
+First, create a new directory for your project and initialize it with npm:
+
+```bash
+mkdir crud-nodejs
+cd crud-nodejs
+npm init -y
+```
+
+Next, install the necessary dependencies:
+
+```bash
+npm install express mongoose cors dotenv body-parser
+npm install --save-dev nodemon
+```
+
+Create the following project structure:
+
+```
+crud-nodejs
+├── config
+│   └── database.js
+├── controllers
+│   └── todoController.js
+├── middleware
+│   └── errorMiddleware.js
+├── models
+│   └── todo.js
+├── routes
+│   └── todoRoutes.js
+├── .env.example
+├── index.js
+└── package.json
+```
+
+### Step 2: Configuring Environment Variables
+
+Create a `.env` file (copy from `.env.example`):
+
+```bash
+cp .env.example .env
+```
+
+Fill in your MongoDB credentials in the `.env` file:
 
 ```js
-// index.js
+PORT=3000
+
+CLIENT_URL=http://localhost:3000
+
+MONGODB_USER=your_mongodb_user
+MONGODB_PASSWORD=your_mongodb_password
+MONGODB_DBNAME=crud
+```
+
+### Step 3: Connecting to MongoDB
+
+In `config/database.js`, we set up the MongoDB connection using Mongoose:
+
+```js
+const mongoose = require('mongoose');
+
+require('dotenv').config();
+
+const dbUser = process.env.MONGODB_USER;
+const dbPassword = process.env.MONGODB_PASSWORD;
+const dbName = process.env.MONGODB_DBNAME || 'crud';
+
+const mongoURI = `mongodb+srv://${dbUser}:${dbPassword}@cluster0.re3ha3x.mongodb.net/${dbName}?retryWrites=true&w=majority`;
+
+module.exports = async function connectDB() {
+    try {
+        await mongoose.connect(mongoURI, {
+            useNewUrlParser: true, useUnifiedTopology: true
+        });
+        console.log('MongoDB connected');
+    } catch (error) {
+        console.error('MongoDB connection failed');
+        console.error(error);
+    }
+};
+```
+
+### Step 4: Creating the Express Server
+
+In `index.js`, we configure the Express server and connect to MongoDB:
+
+```js
 const express = require('express');
 const cors = require("cors");
 const bodyParser = require('body-parser');
@@ -40,24 +134,11 @@ app.listen(PORT, () => {
 });
 ```
 
-```js
-// routes/todoRoutes.js
-const express = require('express');
-const router = express.Router();
-const todoController = require('../controllers/todoController');
+### Step 5: Defining the Todo Model
 
-// Routes
-router.post('/', todoController.createTodo);
-router.get('/', todoController.getAllTodos);
-router.get('/:id', todoController.getTodoById);
-router.patch('/:id', todoController.updateTodo);
-router.delete('/:id', todoController.deleteTodo);
-
-module.exports = router;
-```
+In `models/todo.js`, we define the Todo schema using Mongoose:
 
 ```js
-// models/todo.js
 const mongoose = require('mongoose');
 
 const todoSchema = new mongoose.Schema({
@@ -74,16 +155,11 @@ const todoSchema = new mongoose.Schema({
 module.exports = mongoose.model('Todo', todoSchema);
 ```
 
-```js
-// middleware/errorMiddleware.js
-module.exports = function errorHandler(err, req, res, next) {
-    console.error(err.stack);
-    res.status(500).send('Something broke!');
-};
-```
+### Step 6: Creating the Controller
+
+In `controllers/todoController.js`, we define the logic for handling CRUD operations:
 
 ```js
-// controllers/todoController.js
 const Todo = require('../models/todo');
 const { validateTodo } = require('../utils/validationUtils');
 
@@ -143,44 +219,42 @@ exports.deleteTodo = async (req, res) => {
 };
 ```
 
+### Step 7: Defining Routes
+
+In `routes/todoRoutes.js`, we set up the routes for the Todo API:
+
 ```js
-// config/database.js
-const mongoose = require('mongoose');
+const express = require('express');
+const router = express.Router();
+const todoController = require('../controllers/todoController');
 
-require('dotenv').config();
+// Routes
+router.post('/', todoController.createTodo);
+router.get('/', todoController.getAllTodos);
+router.get('/:id', todoController.getTodoById);
+router.patch('/:id', todoController.updateTodo);
+router.delete('/:id', todoController.deleteTodo);
 
-const dbUser = process.env.MONGODB_USER;
-const dbPassword = process.env.MONGODB_PASSWORD;
-const dbName = process.env.MONGODB_DBNAME || 'crud';
+module.exports = router;
+```
 
-const mongoURI = `mongodb+srv://${dbUser}:${dbPassword}@cluster0.re3ha3x.mongodb.net/${dbName}?retryWrites=true&w=majority`;
+### Step 8: Error Handling Middleware
 
-module.exports = async function connectDB() {
-    try {
-        await mongoose.connect(mongoURI, {
-            useNewUrlParser: true, useUnifiedTopology: true
-        });
-        console.log('MongoDB connected');
-    } catch (error) {
-        console.error('MongoDB connection failed');
-        console.error(error);
-    }
+In `middleware/errorMiddleware.js`, we define a simple error handling middleware:
+
+```js
+// middleware/errorMiddleware.js
+module.exports = function errorHandler(err, req, res, next) {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
 };
 ```
 
-```js
-// .env.example
-PORT=3000
+### Step 9: Running the Application
 
-CLIENT_URL=http://localhost:3000
-
-MONGODB_USER=your_mongodb_user
-MONGODB_PASSWORD=your_mongodb_password
-MONGODB_DBNAME=crud
-```
+Add the following scripts to `package.json`:
 
 ```js
-// package.json
 {
   "name": "crud-nodejs",
   "version": "1.0.0",
@@ -213,10 +287,103 @@ MONGODB_DBNAME=crud
 }
 ```
 
-## Using MySQL
+Start the application in development mode:
+
+```bash
+npm run dev
+```
+
+# CRUD Application with Node.js, Express, and MySQL
+
+## Project Setup
+
+### Step 1: Initializing the Project
+
+Create a new directory for your project and initialize it with npm:
+
+```bash
+mkdir crud-nodejs
+cd crud-nodejs
+npm init -y
+```
+
+Install the necessary dependencies:
+
+```bash
+npm install express mysql2 dotenv body-parser
+npm install --save-dev nodemon
+```
+
+### Step 2: Project Structure
+
+Create the following project structure:
+
+```
+crud-nodejs
+├── config
+│   └── database.js
+├── controllers
+│   └── todoController.js
+├── middleware
+│   └── errorMiddleware.js
+├── models
+│   └── todo.js
+├── routes
+│   └── todoRoutes.js
+├── .env.example
+├── index.js
+└── package.json
+```
+
+### Step 3: Configuring Environment Variables
+
+Create a `.env` file (copy from `.env
+
+.example`):
+
+```bash
+cp .env.example .env
+```
+
+Fill in your MySQL database credentials in the `.env` file:
 
 ```js
-// index.js
+PORT=3000
+DB_HOST=localhost
+DB_USER=your_user
+DB_PASSWORD=your_password
+DB_DATABASE=your_database
+```
+
+### Step 4: Connecting to MySQL
+
+In `config/database.js`, we set up the MySQL connection using the `mysql2` package:
+
+```js
+const mysql = require('mysql2');
+
+require('dotenv').config();
+
+const connection = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE
+});
+
+connection.connect((err) => {
+    if (err) throw err;
+    console.log('Connected to MySQL database');
+});
+
+module.exports = connection;
+```
+
+### Step 5: Creating the Express Server
+
+In `index.js`, we configure the Express server and set up the routes and error handling middleware:
+
+```js
 const express = require('express');
 const bodyParser = require('body-parser');
 const todoRoutes = require('./routes/todoRoutes');
@@ -243,24 +410,11 @@ app.listen(PORT, () => {
 });
 ```
 
-```js
-// routes/todoRoutes.js
-const express = require('express');
-const router = express.Router();
-const todoController = require('../controllers/todoController');
+### Step 6: Defining the Todo Model
 
-// Routes
-router.get('/', todoController.getAllTodos);
-router.get('/:id', todoController.getTodoById);
-router.post('/', todoController.createTodo);
-router.put('/:id', todoController.updateTodo);
-router.delete('/:id', todoController.deleteTodo);
-
-module.exports = router;
-```
+In `models/todo.js`, we define the functions to interact with the MySQL database:
 
 ```js
-// models/todo.js
 const db = require('../config/database');
 
 exports.getAllTodos = function(callback) {
@@ -284,16 +438,11 @@ exports.deleteTodo = function(id, callback) {
 };
 ```
 
-```js
-// middleware/errorMiddleware.js
-module.exports = function errorHandler(err, req, res, next) {
-    console.error(err.stack);
-    res.status(500).send('Something broke!');
-};
-```
+### Step 7: Creating the Controller
+
+In `controllers/todoController.js`, we define the logic for handling CRUD operations:
 
 ```js
-// controllers/todoController.js
 const Todo = require('../models/todo');
 
 exports.getAllTodos = function(req, res) {
@@ -342,35 +491,39 @@ exports.deleteTodo = function(req, res) {
 };
 ```
 
-```js
-// config/database.js
-const mysql = require('mysql2');
+### Step 8: Defining Routes
 
-require('dotenv').config();
-
-const connection = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE
-});
-
-connection.connect((err) => {
-    if (err) throw err;
-    console.log('Connected to MySQL database');
-});
-
-module.exports = connection;
-```
+In `routes/todoRoutes.js`, we set up the routes for the Todo API:
 
 ```js
-// .env.example
-PORT=3000
-DB_HOST=localhost
-DB_USER=your_user
-DB_PASSWORD=your_password
-DB_DATABASE=your_database
+const express = require('express');
+const router = express.Router();
+const todoController = require('../controllers/todoController');
+
+// Routes
+router.get('/', todoController.getAllTodos);
+router.get('/:id', todoController.getTodoById);
+router.post('/', todoController.createTodo);
+router.put('/:id', todoController.updateTodo);
+router.delete('/:id', todoController.deleteTodo);
+
+module.exports = router;
 ```
+
+### Step 9: Error Handling Middleware
+
+In `middleware/errorMiddleware.js`, we define a simple error handling middleware:
+
+```js
+module.exports = function errorHandler(err, req, res, next) {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+};
+```
+
+### Step 10: Running the Application
+
+Add the following scripts to `package.json`:
 
 ```js
 {
@@ -394,4 +547,10 @@ DB_DATABASE=your_database
     "nodemon": "^3.1.0"
   }
 }
+```
+
+Start the application in development mode:
+
+```bash
+npm run dev
 ```
