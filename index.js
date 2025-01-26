@@ -2,6 +2,8 @@
 const express = require('express');
 const cors = require("cors");
 const bodyParser = require('body-parser');
+const helmet = require('helmet');
+const morgan = require('morgan');
 const connectDB = require('./config/database');
 const todoRoutes = require('./routes/todoRoutes');
 const errorMiddleware = require('./middleware/errorMiddleware');
@@ -16,6 +18,8 @@ app.use(
         origin: "*",
     })
 );
+app.use(helmet());
+app.use(morgan('common'));
 
 // Middleware
 app.use(bodyParser.json());
