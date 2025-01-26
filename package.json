@@ -1,7 +1,7 @@
 {
   "name": "crud-nodejs",
   "version": "1.0.0",
-  "description": "",
+  "description": "CRUD operations using Node.js, Express.js, and MongoDB",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -12,9 +12,14 @@
     "type": "git",
     "url": "git+https://github.com/manthanank/crud-nodejs.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "nodejs",
+    "expressjs",
+    "mongodb",
+    "crud"
+  ],
+  "author": "Manthan Ankolekar",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/manthanank/crud-nodejs/issues"
   },
