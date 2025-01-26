@@ -5,9 +5,9 @@
 1. CRUD Application with Node.js, Express, and MongoDB.
 2. CRUD Application with Node.js, Express, and MySQL.
 
-# CRUD Application with Node.js, Express, and MongoDB
+## CRUD Application with Node.js, Express, and MongoDB
 
-## Project Setup
+## Project Setup for MySQL
 
 ### Step 1: Setting Up the Project
 
@@ -28,7 +28,7 @@ npm install --save-dev nodemon
 
 Create the following project structure:
 
-```
+```text
 crud-nodejs
 ├── config
 │   └── database.js
@@ -98,39 +98,34 @@ module.exports = async function connectDB() {
 In `index.js`, we configure the Express server and connect to MongoDB:
 
 ```js
-const express = require('express');
+const express = require("express");
+const bodyParser = require("body-parser");
+const helmet = require("helmet");
+const morgan = require("morgan");
 const cors = require("cors");
-const bodyParser = require('body-parser');
-const connectDB = require('./config/database');
-const todoRoutes = require('./routes/todoRoutes');
-const errorMiddleware = require('./middleware/errorMiddleware');
+const todoRoutes = require("./routes/todoRoutes");
+const errorMiddleware = require("./middleware/errorMiddleware");
 
-require('dotenv').config();
+require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(
-    cors({
-        origin: "*",
-    })
-);
-
 // Middleware
 app.use(bodyParser.json());
-
-// Connect to MongoDB
-connectDB();
+app.use(helmet());
+app.use(morgan("common"));
+app.use(cors());
 
 // Routes
-app.use('/todos', todoRoutes);
+app.use("/todos", todoRoutes);
 
 // Error middleware
 app.use(errorMiddleware);
 
 // Start the server
 app.listen(PORT, () => {
-    console.log(`Server started on port ${PORT}`);
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
 ```
 
@@ -293,9 +288,9 @@ Start the application in development mode:
 npm run dev
 ```
 
-# CRUD Application with Node.js, Express, and MySQL
+## CRUD Application with Node.js, Express, and MySQL
 
-## Project Setup
+## Project Setup for MongoDB
 
 ### Step 1: Initializing the Project
 
@@ -318,7 +313,7 @@ npm install --save-dev nodemon
 
 Create the following project structure:
 
-```
+```text
 crud-nodejs
 ├── config
 │   └── database.js
@@ -385,7 +380,11 @@ In `index.js`, we configure the Express server and set up the routes and error h
 
 ```js
 const express = require('express');
+const cors = require("cors");
 const bodyParser = require('body-parser');
+const helmet = require('helmet');
+const morgan = require('morgan');
+const connectDB = require('./config/database');
 const todoRoutes = require('./routes/todoRoutes');
 const errorMiddleware = require('./middleware/errorMiddleware');
 
@@ -394,9 +393,19 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(
+    cors({
+        origin: "*",
+    })
+);
+app.use(helmet());
+app.use(morgan('common'));
 
 // Middleware
 app.use(bodyParser.json());
+
+// Connect to MongoDB
+connectDB();
 
 // Routes
 app.use('/todos', todoRoutes);
@@ -406,7 +415,7 @@ app.use(errorMiddleware);
 
 // Start the server
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Server started on port ${PORT}`);
 });
 ```
 
